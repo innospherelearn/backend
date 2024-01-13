@@ -193,7 +193,14 @@ router.post("/addkursus", upload.single("thumbimg"), async (req, res) => {
 });
 router.get("/getimage", (req, res) => {
   var pathe = atob(req.query.pathe).toString().split("/");
-  return res.sendFile(pathe[1], { root: pathe[0] });
+  const params = {
+    Bucket: 'cyclic-amused-kerchief-eel-eu-west-3',
+    Key: pathe,
+  };
+  const s3Stream = s3.getObject(params).createReadStream();
+  res.setHeader('content-type', 'image/com');
+  s3Stream.pipe(res);
+  // return res.sendFile(pathe[1], { root: pathe[0] });
 });
 router.get("/getcoursedetail/:id", async (req, res) => {
   const token = req.headers["x-auth-token"];
