@@ -269,6 +269,8 @@ router.post(
           throw err;
         }
       });
+      var sekarang = String(Date.now());
+      filenameupload = sekarang;
       await Kursus.updateOne(
         {
           _id: id,
@@ -281,7 +283,19 @@ router.post(
           thumb_path: "thumb_kursus/" + filenameupload,
         }
       );
-      return res.status(200).send("success");
+      const params = {
+        Bucket: 'cyclic-amused-kerchief-eel-eu-west-3',
+        Key: "thumb_kursus/" + filenameupload.toString(),
+        Body: req.file.buffer,
+      };
+  
+      s3.upload(params, (err, data) => {
+        if (err) {
+          console.error(err);
+          return res.status(500).send('Error uploading file');
+        }
+        return res.status(200).send("success");
+      })
     }
   }
 );
