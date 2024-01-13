@@ -618,7 +618,7 @@ app.post("/create-payment", async (req, res) => {
   try {
     gross_amount = parseInt(gross_amount);
     const order_id = helper.generateOrderId(id_user);
-    const midtransPromise = axios.post(
+    const midtransPromise = await axios.post(
       "https://app.sandbox.midtrans.com/snap/v1/transactions",
       {
         transaction_details: {
