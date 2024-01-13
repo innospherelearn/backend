@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@aws-sdk/lib-storage": "^3.490.0",
     "@cyclic.sh/s3fs": "^1.2.9",
     "axios": "^1.6.4",
     "bcrypt": "^5.1.1",
