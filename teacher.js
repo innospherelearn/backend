@@ -264,11 +264,10 @@ router.post(
       const ambilkursus = await Kursus.findOne({
         _id: id,
       });
-      fs.unlink("./" + ambilkursus.thumb_path, (err) => {
-        if (err) {
-          throw err;
-        }
-      });
+      s3.deleteObject({
+        Bucket: 'cyclic-amused-kerchief-eel-eu-west-3',
+        Key: ambilkursus.thumb_path,
+      }, (err, data) => {})
       var sekarang = String(Date.now());
       filenameupload = sekarang;
       await Kursus.updateOne(
