@@ -73,16 +73,7 @@ const getPPTeacher = async (req, res) => {
     Bucket: 'cyclic-amused-kerchief-eel-eu-west-3',
     Key: lokasinya,
   };
-  let fileData = '';
   const s3Stream = s3.getObject(params).createReadStream();
-  s3Stream.on('data', (chunk) => {
-    // Mengumpulkan setiap bagian data file
-    fileData += chunk;
-  });
-  s3Stream.on('end', () => {
-    const base64Data = Buffer.from(fileData).toString('base64');
-    res.status(200).send(base64Data);
-  });
   s3Stream.pipe(res);
   // return res.status(200).sendFile(lokasinya, { root: "." });
 };
