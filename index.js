@@ -14,10 +14,7 @@ const port = 3000;
 const cors = require("cors");
 const teacher = require("./teacher");
 app.use(
-  cors({
-    origin: "http://localhost:5173",
-    optionsSuccessStatus: 200,
-  })
+  cors()
 );
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
