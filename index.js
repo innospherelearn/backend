@@ -204,8 +204,8 @@ app.get("/kursus/:_id", async (req, res) => {
     const url = s3.getSignedUrl('getObject', {
       Bucket: 'cyclic-amused-kerchief-eel-eu-west-3',
       Key: pathbiasa,
-    }, {
-      ResponseContentDisposition: 'inline',
+      ResponseContentType: "application/pdf",
+      ResponseContentDisposition: "inline",
     });
     linkmateri.push(url);
   }
