@@ -198,10 +198,25 @@ app.get("/listKursus", async (req, res) => {
 //get kursus information
 app.get("/kursus/:_id", async (req, res) => {
   const kursus = await Kursus.find({ _id: req.params._id });
+  let linkmateri = [];
+  for (var i = 0; i < kursus[0].materi.length; i++) {
+    var pathbiasa = kursus[0].materi[i].path;
+    s3.getSignedUrl('getObject', {
+      Bucket: 'cyclic-amused-kerchief-eel-eu-west-3',
+      Key: pathbiasa,
+    }, (err, url) => {
+      if (err) {
+        console.error('Error generating presigned URL:', err);
+        return;
+      }
+      linkmateri.push(url);
+    });
+  }
   const user = await User.find({ _id: kursus[0].owner });
   return res.status(200).json({
     kursus: kursus,
     teacher: user,
+    link_materi:linkmateri,
   });
 });
 
