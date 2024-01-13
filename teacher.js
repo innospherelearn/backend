@@ -518,19 +518,29 @@ router.post(
         const ambilmateriIndex = ambilkursus.materi.findIndex((materi) =>
           materi._id.equals(idmateri)
         );
-        fs.unlink(
-          "../frontend/public/" + ambilkursus.materi[ambilmateriIndex].path,
-          (err) => {
-            if (err) {
-              throw err;
-            }
-          }
-        );
+        var sekarang = String(Date.now());
+        filenameupload = sekarang;
+        s3.deleteObject({
+          Bucket: 'cyclic-amused-kerchief-eel-eu-west-3',
+          Key: ambilkursus.materi[ambilmateriIndex].path,
+        }, (err, data) => { })
         ambilkursus.materi[ambilmateriIndex].path =
-          "/materi_pdf/" + filenameupload;
+          "materi_pdf/" + filenameupload;
         ambilkursus.materi[ambilmateriIndex].name = nama;
         ambilkursus.save();
-        return res.status(200).send("sukses");
+        const params = {
+          Bucket: 'cyclic-amused-kerchief-eel-eu-west-3',
+          Key: "materi_pdf/" + filenameupload.toString(),
+          Body: req.file.buffer,
+        };
+
+        s3.upload(params, (err, data) => {
+          if (err) {
+            console.error(err);
+            return res.status(500).send('Error uploading file');
+          }
+          return res.status(200).send("sukses");
+        })
       } else {
         return res.status(403).send("gagal");
       }
