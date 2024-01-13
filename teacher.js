@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const AWS = require('aws-sdk');
 const jwt = require("jsonwebtoken");
 const { User, Kursus, Tugas, Forum, Transaction } = require("./models/data");
 const multer = require("multer");
@@ -7,6 +8,7 @@ const secret = "rahasia";
 const uploadAssignment = require("./controller/uploadAssignment");
 const fs = require('@cyclic.sh/s3fs/promises')("cyclic-amused-kerchief-eel-eu-west-3");
 const { log } = require("util");
+const s3 = new AWS.S3();
 router.get("/ceklogin", async (req, res) => {
   const token = req.headers["x-auth-token"];
   if (token == null || token == "") {
@@ -136,17 +138,17 @@ router.get("/courselist", async (req, res) => {
   }
 });
 var filenameupload = "";
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "thumb_kursus/");
-  },
-  filename: (req, file, cb) => {
-    var sekarang = String(Date.now());
-    filenameupload = sekarang;
-    cb(null, sekarang);
-  },
-});
-const upload = multer({ storage: storage });
+// const storage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, "thumb_kursus/");
+//   },
+//   filename: (req, file, cb) => {
+//     var sekarang = String(Date.now());
+//     filenameupload = sekarang;
+//     cb(null, sekarang);
+//   },
+// });
+const upload = multer({ storage: multer.memoryStorage() });
 router.post("/addkursus", upload.single("thumbimg"), async (req, res) => {
   const token = req.headers["x-auth-token"];
   var owner = "";
@@ -159,6 +161,8 @@ router.post("/addkursus", upload.single("thumbimg"), async (req, res) => {
     } catch (err) {
       return res.status(200).send("invalid");
     }
+    var sekarang = String(Date.now());
+    filenameupload = sekarang;
     const { nama_kursus, kategori, harga, deskripsi } = req.body;
     await Kursus.insertMany({
       nama_kursus: nama_kursus,
@@ -172,7 +176,19 @@ router.post("/addkursus", upload.single("thumbimg"), async (req, res) => {
       assignment: [],
       quiz: [],
     });
-    return res.status(200).send("success");
+    const params = {
+      Bucket: 'cyclic-amused-kerchief-eel-eu-west-3',
+      Key: "thumb_kursus/" + filenameupload.toString(),
+      Body: req.file.buffer,
+    };
+
+    s3.upload(params, (err, data) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).send('Error uploading file');
+      }
+      return res.status(200).send("success");
+    })
   }
 });
 router.get("/getimage", (req, res) => {
