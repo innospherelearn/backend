@@ -763,7 +763,7 @@ app.post("/payment-notification-handler", async (req, res) => {
 app.listen(port, async () => {
   try {
     await mongoose.connect("mongodb+srv://innospherelearn:zrH4tcc14pJFHd7L@cluster0.ywcvlcm.mongodb.net/?retryWrites=true&w=majority");
-    console.log("Database connected");
+    console.log("Database connectede");
   } catch (e) {
     console.log("Error database connection \n", e);
   }
