@@ -74,7 +74,7 @@ const getPPTeacher = async (req, res) => {
     Key: lokasinya,
   };
   const s3Stream = s3.getObject(params).createReadStream();
-  res.setHeader('content-type', 'text/plain');
+  res.setHeader('content-type', 'text/plain'+lokasinya.split('.')[1]);
   s3Stream.pipe(res);
   // return res.status(200).sendFile(lokasinya, { root: "." });
 };
