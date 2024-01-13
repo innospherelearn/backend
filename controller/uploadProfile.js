@@ -7,7 +7,7 @@ const secret = "rahasia";
 let id = 1;
 
 const storage = multer.diskStorage({
-  destination: (req, file, callback) => {
+  destination: async (req, file, callback) => {
     const folderName = `profiles/`;
 
     if (!await(fs.existsSync(folderName))) {
