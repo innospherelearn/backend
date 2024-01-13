@@ -87,7 +87,7 @@ const singleFile = (req, res) => {
       }
     }
 
-    const fileName = req.file.filename;
+    const fileName = req.file.originalname;
 
     const result = await User.updateOne(
       { _id: id_user },
