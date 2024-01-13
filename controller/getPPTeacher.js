@@ -70,7 +70,7 @@ const getPPTeacher = async (req, res) => {
   }
   const lokasinya = user.profile_path;
 
-  return res.status(200).sendFile(lokasinya, { root: "." });
+  return res.status(200).sendFile(lokasinya);
 };
 
 module.exports = {
