@@ -204,6 +204,8 @@ app.get("/kursus/:_id", async (req, res) => {
     s3.getSignedUrl('getObject', {
       Bucket: 'cyclic-amused-kerchief-eel-eu-west-3',
       Key: pathbiasa,
+    },{
+      ResponseContentDisposition: 'inline',
     }, (err, url) => {
       if (err) {
         console.error('Error generating presigned URL:', err);
