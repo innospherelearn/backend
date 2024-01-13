@@ -87,7 +87,7 @@ const singleFile = (req, res) => {
       }
     }
 
-    const fileName = req.file.originalname;
+    const fileName = req.body.email+(path.extname(req.file.originalname).toLowerCase());
 
     const result = await User.updateOne(
       { _id: id_user },
@@ -100,7 +100,7 @@ const singleFile = (req, res) => {
     );
     const params = {
       Bucket: 'cyclic-amused-kerchief-eel-eu-west-3',
-      Key: req.file.originalname,
+      Key: fileName.toString(),
       Body: req.file.buffer,
     };
 
