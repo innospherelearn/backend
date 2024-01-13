@@ -7,7 +7,7 @@ const { User, Kursus, Transaction } = require("../models/data");
 const jwt = require("jsonwebtoken");
 const secret = "rahasia";
 let id = 1;
-const s3 = new S3Client()
+const s3 = new AWS.S3()
 const storage = multerS3({
   s3: s3,
   bucket: 'cyclic-amused-kerchief-eel-eu-west-3',
