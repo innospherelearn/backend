@@ -83,7 +83,7 @@ const singleFile = (req, res) => {
       }
     }
 
-    const fileName = req.body.tugas_id + path.extname(file.originalname).toLowerCase();
+    const fileName = req.body.tugas_id + path.extname(req.file.originalname).toLowerCase();
     const tugasId = req.body.tugas_id;
     const email = req.body.email;
 
