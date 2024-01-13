@@ -1,5 +1,6 @@
 const multer = require("multer");
 const { S3Client } = require('@aws-sdk/client-s3')
+const AWS = require("aws-sdk");
 const multerS3 = require('multer-s3')
 const fs = require('@cyclic.sh/s3fs/promises')("cyclic-amused-kerchief-eel-eu-west-3");
 const path = require("path");
