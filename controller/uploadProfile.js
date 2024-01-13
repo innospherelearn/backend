@@ -41,33 +41,38 @@ const storage = multerS3({
   },
 });
 
-const upload = multer({
-  storage: storage,
-  limits: {
-    fileSize: 50000000,
-  },
-  fileFilter: (req, file, callback) => {
-    const rules = /jpeg|jpg|png/;
+// const upload = multer({
+//   storage: storage,
+//   limits: {
+//     fileSize: 50000000,
+//   },
+//   fileFilter: (req, file, callback) => {
+//     const rules = /jpeg|jpg|png/;
 
-    const fileExtension = path.extname(file.originalname).toLowerCase();
-    const fileMimeType = file.mimetype;
+//     const fileExtension = path.extname(file.originalname).toLowerCase();
+//     const fileMimeType = file.mimetype;
 
-    const cekExt = rules.test(fileExtension);
-    const cekMime = rules.test(fileMimeType);
+//     const cekExt = rules.test(fileExtension);
+//     const cekMime = rules.test(fileMimeType);
 
-    if (cekExt && cekMime) {
-      callback(null, true);
-    } else {
-      callback(null, false);
-      return callback(
-        new multer.MulterError(
-          "Tipe file harus .png, .jpg atau .jpeg",
-          file.fieldname
-        )
-      );
-    }
-  },
-});
+//     if (cekExt && cekMime) {
+//       callback(null, true);
+//     } else {
+//       callback(null, false);
+//       return callback(
+//         new multer.MulterError(
+//           "Tipe file harus .png, .jpg atau .jpeg",
+//           file.fieldname
+//         )
+//       );
+//     }
+//   },
+// });
+const upload = await s3.putObject({
+  Body: JSON.stringify({ key: req.body.profile_image }),
+  Bucket: "cyclic-amused-kerchief-eel-eu-west-3",
+  Key: "some_files/my_file.json",
+}).promise()
 
 const singleFile = (req, res) => {
   const uploadingFile = upload.single("profile_image");
