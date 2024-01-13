@@ -147,7 +147,14 @@ const singleFile = (req, res) => {
 const getPdf = (req, res) => {
   let { path, email, file } = req.params;
   const lokasinya = `${path}/${email}/${file}`;
-  return res.status(200).sendFile(lokasinya, { root: "." });
+  const params = {
+    Bucket: 'cyclic-amused-kerchief-eel-eu-west-3',
+    Key: lokasinya,
+  };
+  const s3Stream = s3.getObject(params).createReadStream();
+  res.setHeader('content-type', 'application/pdf');
+  s3Stream.pipe(res);
+  // return res.status(200).sendFile(lokasinya, { root: "." });
 };
 
 module.exports = {
