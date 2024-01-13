@@ -87,7 +87,7 @@ const singleFile = (req, res) => {
       }
     }
 
-    const fileName = req.body.email+(path.extname(req.file.originalname).toLowerCase());
+    const fileName = req.body.email + (path.extname(req.file.originalname).toLowerCase());
 
     const result = await User.updateOne(
       { _id: id_user },
@@ -141,7 +141,13 @@ const getImage = async (req, res) => {
     return res.status(200).sendFile(lokasinya, { root: "." });
   }
   const lokasinya = user.profile_path;
-  return res.status(200).sendFile(lokasinya, { root: "." });
+  const params = {
+    Bucket: 'cyclic-amused-kerchief-eel-eu-west-3',
+    Key: lokasinya,
+  };
+  const s3Stream = s3.getObject(params).createReadStream();
+  res.setHeader('content-type', 'image/' + lokasinya.split('.')[1]);
+  s3Stream.pipe(res);
 };
 
 module.exports = {
