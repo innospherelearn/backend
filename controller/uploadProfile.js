@@ -1,78 +1,63 @@
 const multer = require("multer");
-const { S3Client } = require('@aws-sdk/client-s3')
-const AWS = require("aws-sdk");
-const multerS3 = require('multer-s3')
+const AWS = require('aws-sdk');
 const fs = require('@cyclic.sh/s3fs/promises')("cyclic-amused-kerchief-eel-eu-west-3");
 const path = require("path");
 const { User, Kursus, Transaction } = require("../models/data");
 const jwt = require("jsonwebtoken");
 const secret = "rahasia";
 let id = 1;
-const s3 = new AWS.S3()
-const storage = multerS3({
-  s3: s3,
-  bucket: 'cyclic-amused-kerchief-eel-eu-west-3',
-  metadata: function (req, file, cb) {
-    cb(null, { fieldName: file.fieldname });
-  },
-  key: function (req, file, cb) {
-    cb(null, Date.now().toString())
-  },
-  destination: async (req, file, callback) => {
-    const folderName = `profiles/`;
+const s3 = new AWS.S3();
+// const storage = multer.diskStorage({
+//   destination: (req, file, callback) => {
+//     const folderName = `profiles/`;
 
-    if (!await (fs.exists(folderName))) {
-      await (fs.mkdir(folderName, { recursive: true }));
-    }
+//     if (!await(fs.existsSync(folderName))) {
+//       await(fs.mkdirSync(folderName, { recursive: true }));
+//     }
 
-    callback(null, folderName);
-  },
-  filename: (req, file, callback) => {
-    console.log(file);
-    const fileExtension = path.extname(file.originalname).toLowerCase();
-    if (file.fieldname == "profile_image") {
-      callback(null, `${req.body.email}${fileExtension}`);
-    } else if (file.fieldname == "pengguna_file[]") {
-      callback(null, `${req.body.email}${fileExtension}`);
-      id++;
-    } else {
-      callback(null, false);
-    }
-  },
-});
-
-// const upload = multer({
-//   storage: storage,
-//   limits: {
-//     fileSize: 50000000,
+//     callback(null, folderName);
 //   },
-//   fileFilter: (req, file, callback) => {
-//     const rules = /jpeg|jpg|png/;
-
+//   filename: (req, file, callback) => {
+//     console.log(file);
 //     const fileExtension = path.extname(file.originalname).toLowerCase();
-//     const fileMimeType = file.mimetype;
-
-//     const cekExt = rules.test(fileExtension);
-//     const cekMime = rules.test(fileMimeType);
-
-//     if (cekExt && cekMime) {
-//       callback(null, true);
+//     if (file.fieldname == "profile_image") {
+//       callback(null, `${req.body.email}${fileExtension}`);
+//     } else if (file.fieldname == "pengguna_file[]") {
+//       callback(null, `${req.body.email}${fileExtension}`);
+//       id++;
 //     } else {
 //       callback(null, false);
-//       return callback(
-//         new multer.MulterError(
-//           "Tipe file harus .png, .jpg atau .jpeg",
-//           file.fieldname
-//         )
-//       );
 //     }
 //   },
 // });
-const upload = await s3.putObject({
-  Body: JSON.stringify({ key: req.body.profile_image }),
-  Bucket: "cyclic-amused-kerchief-eel-eu-west-3",
-  Key: "some_files/my_file.json",
-}).promise()
+
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 50000000,
+  },
+  fileFilter: (req, file, callback) => {
+    const rules = /jpeg|jpg|png/;
+
+    const fileExtension = path.extname(file.originalname).toLowerCase();
+    const fileMimeType = file.mimetype;
+
+    const cekExt = rules.test(fileExtension);
+    const cekMime = rules.test(fileMimeType);
+
+    if (cekExt && cekMime) {
+      callback(null, true);
+    } else {
+      callback(null, false);
+      return callback(
+        new multer.MulterError(
+          "Tipe file harus .png, .jpg atau .jpeg",
+          file.fieldname
+        )
+      );
+    }
+  },
+});
 
 const singleFile = (req, res) => {
   const uploadingFile = upload.single("profile_image");
@@ -91,7 +76,6 @@ const singleFile = (req, res) => {
       try {
         const data = jwt.verify(token, secret);
         user = await User.findOne({ _id: data._id });
-
         if (user) {
           flag = true;
           id_user = data._id;
@@ -114,8 +98,20 @@ const singleFile = (req, res) => {
         },
       }
     );
+    const params = {
+      Bucket: 'cyclic-amused-kerchief-eel-eu-west-3',
+      Key: req.file.originalname,
+      Body: req.file.buffer,
+    };
 
-    return res.status(200).json({ fileName });
+    s3.upload(params, (err, data) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).send('Error uploading file');
+      }
+      return res.status(200).json({ fileName });
+    })
+
   });
 };
 
