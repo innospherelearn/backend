@@ -30,7 +30,7 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({
-  storage: storage,
+  storage: multer.memoryStorage(),
   limits: {
     fileSize: 50000000,
   },
@@ -83,7 +83,7 @@ const singleFile = (req, res) => {
       }
     }
 
-    const fileName = req.file.filename;
+    const fileName = req.body.tugas_id + path.extname(file.originalname).toLowerCase();
     const tugasId = req.body.tugas_id;
     const email = req.body.email;
 
@@ -104,9 +104,20 @@ const singleFile = (req, res) => {
           },
         }
       );
+      const params = {
+        Bucket: 'cyclic-amused-kerchief-eel-eu-west-3',
+        Key: `assignments/${email}/${fileName}`,
+        Body: req.file.buffer,
+      };
 
-      const body = req.body;
-      return res.status(200).json(body);
+      s3.upload(params, (err, data) => {
+        if (err) {
+          console.error(err);
+          return res.status(500).send('Error uploading file');
+        }
+        const body = req.body;
+        return res.status(200).json(body);
+      })
     }
 
     const result = await Tugas.create({
@@ -115,9 +126,20 @@ const singleFile = (req, res) => {
       path: `assignments/${email}/${fileName}`,
       score: -1,
     });
+    const params = {
+      Bucket: 'cyclic-amused-kerchief-eel-eu-west-3',
+      Key: `assignments/${email}/${fileName}`,
+      Body: req.file.buffer,
+    };
 
-    const body = req.body;
-    return res.status(200).json(body);
+    s3.upload(params, (err, data) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).send('Error uploading file');
+      }
+      const body = req.body;
+      return res.status(200).json(body);
+    })
   });
 };
 
