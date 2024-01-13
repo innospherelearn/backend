@@ -267,7 +267,7 @@ router.post(
       s3.deleteObject({
         Bucket: 'cyclic-amused-kerchief-eel-eu-west-3',
         Key: ambilkursus.thumb_path,
-      }, (err, data) => {})
+      }, (err, data) => { })
       var sekarang = String(Date.now());
       filenameupload = sekarang;
       await Kursus.updateOne(
@@ -287,7 +287,7 @@ router.post(
         Key: "thumb_kursus/" + filenameupload.toString(),
         Body: req.file.buffer,
       };
-  
+
       s3.upload(params, (err, data) => {
         if (err) {
           console.error(err);
@@ -401,17 +401,7 @@ const storagemateri = multer.diskStorage({
     cb(null, sekarang + ".pdf");
   },
 });
-const tempstorage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "../frontend/public/materi_pdf/");
-  },
-  filename: function (req, file, cb) {
-    var sekarang = String(Date.now());
-    filenameupload = sekarang + ".pdf";
-    cb(null, sekarang + ".pdf");
-  },
-});
-const uploadmateri = multer({ storage: tempstorage });
+const uploadmateri = multer({ storage: multer.memoryStorage() });
 router.post("/addmateri", uploadmateri.single("filepdf"), async (req, res) => {
   const token = req.headers["x-auth-token"];
   if (token == null || token == "") {
@@ -427,8 +417,10 @@ router.post("/addmateri", uploadmateri.single("filepdf"), async (req, res) => {
       _id: idkursus,
     });
     if (ambilkursus.owner == tokendata._id.toString()) {
+      var sekarang = String(Date.now());
+      filenameupload = sekarang;
       const databaru = {
-        path: "/materi_pdf/" + filenameupload,
+        path: "materi_pdf/" + filenameupload,
         name: nama,
       };
       await Kursus.updateOne(
@@ -437,7 +429,19 @@ router.post("/addmateri", uploadmateri.single("filepdf"), async (req, res) => {
         },
         { $push: { materi: databaru } }
       );
-      return res.status(200).send("success");
+      const params = {
+        Bucket: 'cyclic-amused-kerchief-eel-eu-west-3',
+        Key: "materi_pdf/" + filenameupload.toString(),
+        Body: req.file.buffer,
+      };
+
+      s3.upload(params, (err, data) => {
+        if (err) {
+          console.error(err);
+          return res.status(500).send('Error uploading file');
+        }
+        return res.status(200).send("success");
+      })
     } else {
       return res.status(403).send("gagal");
     }
