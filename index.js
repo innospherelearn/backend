@@ -200,7 +200,7 @@ app.get("/kursus/:_id", async (req, res) => {
   const kursus = await Kursus.find({ _id: req.params._id });
 
   for (var i = 0; i < kursus[0].materi.length; i++) {
-    var pathbiasa = kursus.materi[i].path;
+    var pathbiasa = kursus[0].materi[i].path;
     s3.getSignedUrl('getObject', {
       Bucket: 'cyclic-amused-kerchief-eel-eu-west-3',
       Key: pathbiasa,
