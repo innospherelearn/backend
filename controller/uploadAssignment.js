@@ -1,11 +1,12 @@
 const multer = require("multer");
+const AWS = require('aws-sdk');
 const fs = require('@cyclic.sh/s3fs/promises')("cyclic-amused-kerchief-eel-eu-west-3");
 const path = require("path");
 const { User, Kursus, Transaction, Tugas } = require("../models/data");
 const jwt = require("jsonwebtoken");
 const secret = "rahasia";
 let id = 1;
-
+const s3 = new AWS.S3();
 const storage = multer.diskStorage({
   destination: (req, file, callback) => {
     const folderName = `assignments/${req.body.email}`;
