@@ -87,28 +87,28 @@ const singleFile = (req, res) => {
       }
     }
 
-    const fileName = req.body.email + (path.extname(req.file.originalname).toLowerCase());
+    const fileName = req.body.email+(path.extname(req.file.originalname).toLowerCase());
 
+    const result = await User.updateOne(
+      { _id: id_user },
+      {
+        $set: {
+          profile_path: "profiles/" + fileName.toString(),
+          updatedAt: new Date(),
+        },
+      }
+    );
     const params = {
       Bucket: 'cyclic-amused-kerchief-eel-eu-west-3',
-      Key: fileName.toString(),
+      Key: "profiles/" + fileName.toString(),
       Body: req.file.buffer,
     };
 
-    s3.upload(params, async (err, data) => {
+    s3.upload(params, (err, data) => {
       if (err) {
         console.error(err);
         return res.status(500).send('Error uploading file');
       }
-      const result = await User.updateOne(
-        { _id: id_user },
-        {
-          $set: {
-            profile_path: s3.getSignedUrl('getObject', { Bucket: 'cyclic-amused-kerchief-eel-eu-west-3', Key: fileName.toString() }),
-            updatedAt: new Date(),
-          },
-        }
-      );
       return res.status(200).json({ fileName });
     })
 

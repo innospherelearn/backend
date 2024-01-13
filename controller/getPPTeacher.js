@@ -1,4 +1,5 @@
 const multer = require("multer");
+const AWS = require('aws-sdk');
 const fs = require('@cyclic.sh/s3fs/promises')("cyclic-amused-kerchief-eel-eu-west-3");
 const path = require("path");
 const { User, Kursus, Transaction } = require("../models/data");
@@ -6,8 +7,7 @@ const jwt = require("jsonwebtoken");
 const secret = "rahasia";
 let id = 1;
 const { ObjectId } = require("mongodb");
-const { default: axios } = require("axios");
-
+const s3 = new AWS.S3();
 const storage = multer.diskStorage({
   destination: (req, file, callback) => {
     const folderName = `profiles/`;
@@ -66,12 +66,16 @@ const getPPTeacher = async (req, res) => {
 
   if (user.profile_path == null) {
     const lokasinya = "profiles/dummy.jpeg";
-
     return res.status(200).sendFile(lokasinya, { root: "." });
   }
   const lokasinya = user.profile_path;
-
-  return res.status(200).sendFile(await axios.get(lokasinya));
+  const params = {
+    Bucket: 'cyclic-amused-kerchief-eel-eu-west-3',
+    Key: lokasinya,
+  };
+  const s3Stream = s3.getObject(params).createReadStream();
+  s3Stream.pipe(res);
+  // return res.status(200).sendFile(lokasinya, { root: "." });
 };
 
 module.exports = {
