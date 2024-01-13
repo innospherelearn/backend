@@ -1,5 +1,5 @@
 const multer = require("multer");
-const fs = require("fs");
+const fs = require('@cyclic.sh/s3fs/promises')("cyclic-amused-kerchief-eel-eu-west-3");
 const path = require("path");
 const { User, Kursus, Transaction } = require("../models/data");
 const jwt = require("jsonwebtoken");
