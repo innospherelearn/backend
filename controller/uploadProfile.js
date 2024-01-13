@@ -1,17 +1,27 @@
 const multer = require("multer");
+const { S3Client } = require('@aws-sdk/client-s3')
+const multerS3 = require('multer-s3')
 const fs = require('@cyclic.sh/s3fs/promises')("cyclic-amused-kerchief-eel-eu-west-3");
 const path = require("path");
 const { User, Kursus, Transaction } = require("../models/data");
 const jwt = require("jsonwebtoken");
 const secret = "rahasia";
 let id = 1;
-
-const storage = multer.diskStorage({
+const s3 = new S3Client()
+const storage = multerS3({
+  s3: s3,
+  bucket: 'cyclic-amused-kerchief-eel-eu-west-3',
+  metadata: function (req, file, cb) {
+    cb(null, { fieldName: file.fieldname });
+  },
+  key: function (req, file, cb) {
+    cb(null, Date.now().toString())
+  },
   destination: async (req, file, callback) => {
     const folderName = `profiles/`;
 
-    if (!await(fs.exists(folderName))) {
-      await(fs.mkdir(folderName, { recursive: true }));
+    if (!await (fs.exists(folderName))) {
+      await (fs.mkdir(folderName, { recursive: true }));
     }
 
     callback(null, folderName);
