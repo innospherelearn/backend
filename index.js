@@ -641,15 +641,6 @@ app.post("/create-payment", async (req, res) => {
       user: id_user,
       kursus: id_kursus,
     });
-    if (cekada.status == "pending") {
-      const updateid = await Transaction.updateOne(
-        {
-          user: id_user,
-          kursus: id_kursus,
-        },
-        { $set: { order_id: order_id } }
-      );
-    }
     if (cekada == null) {
       const newTransaction = new Transaction({
         order_id: order_id,
@@ -659,6 +650,14 @@ app.post("/create-payment", async (req, res) => {
         status: "pending",
       });
       newTransaction.save();
+    }else if (cekada.status == "pending") {
+      const updateid = await Transaction.updateOne(
+        {
+          user: id_user,
+          kursus: id_kursus,
+        },
+        { $set: { order_id: order_id } }
+      );
     }
 
     return res.status(200).json((await midtransPromise).data);
