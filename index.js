@@ -209,7 +209,7 @@ app.get("/kursus/:_id", async (req, res) => {
         console.error('Error generating presigned URL:', err);
         return;
       }
-      kursus.materi[i].path = url;
+      kursus[0].materi[i].path = url;
     });
   }
   const user = await User.find({ _id: kursus[0].owner });
