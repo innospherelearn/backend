@@ -199,19 +199,19 @@ app.get("/listKursus", async (req, res) => {
 app.get("/kursus/:_id", async (req, res) => {
   const kursus = await Kursus.find({ _id: req.params._id });
 
-  // for (var i = 0; i < kursus.materi.length; i++) {
-  //   var pathbiasa = kursus.materi[i].path;
-  //   s3.getSignedUrl('getObject', {
-  //     Bucket: 'cyclic-amused-kerchief-eel-eu-west-3',
-  //     Key: pathbiasa,
-  //   }, (err, url) => {
-  //     if (err) {
-  //       console.error('Error generating presigned URL:', err);
-  //       return;
-  //     }
-  //     kursus.materi[i].path = url;
-  //   });
-  // }
+  for (var i = 0; i < kursus[0].materi.length; i++) {
+    var pathbiasa = kursus.materi[i].path;
+    s3.getSignedUrl('getObject', {
+      Bucket: 'cyclic-amused-kerchief-eel-eu-west-3',
+      Key: pathbiasa,
+    }, (err, url) => {
+      if (err) {
+        console.error('Error generating presigned URL:', err);
+        return;
+      }
+      kursus.materi[i].path = url;
+    });
+  }
   const user = await User.find({ _id: kursus[0].owner });
   return res.status(200).json({
     kursus: kursus,
