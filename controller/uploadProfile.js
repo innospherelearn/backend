@@ -1,5 +1,5 @@
 const multer = require("multer");
-const fs = require('@aws-sdk/lib-storage')("cyclic-amused-kerchief-eel-eu-west-3")
+const fs = require("fs");
 const path = require("path");
 const { User, Kursus, Transaction } = require("../models/data");
 const jwt = require("jsonwebtoken");
