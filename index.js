@@ -211,8 +211,9 @@ app.get("/kursus/:_id", async (req, res) => {
   }
   const user = await User.find({ _id: kursus[0].owner });
   return res.status(200).json({
-    kursus: [kursus, linkmateri],
+    kursus: kursus,
     teacher: user,
+    materi : linkmateri,
   });
 });
 
