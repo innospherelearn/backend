@@ -201,24 +201,18 @@ app.get("/kursus/:_id", async (req, res) => {
   let linkmateri = [];
   for (var i = 0; i < kursus[0].materi.length; i++) {
     var pathbiasa = kursus[0].materi[i].path;
-    s3.getSignedUrl('getObject', {
+    const url = s3.getSignedUrl('getObject', {
       Bucket: 'cyclic-amused-kerchief-eel-eu-west-3',
       Key: pathbiasa,
-    },{
+    }, {
       ResponseContentDisposition: 'inline',
-    }, (err, url) => {
-      if (err) {
-        console.error('Error generating presigned URL:', err);
-        return;
-      }
-      linkmateri.push(url);
     });
+    linkmateri.push(url);
   }
   const user = await User.find({ _id: kursus[0].owner });
   return res.status(200).json({
-    kursus: kursus,
+    kursus: [kursus, linkmateri],
     teacher: user,
-    link_materi:linkmateri,
   });
 });
 
