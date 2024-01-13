@@ -1,5 +1,5 @@
 const multer = require("multer");
-const fs = require('@cyclic.sh/s3fs')("cyclic-amused-kerchief-eel-eu-west-3");
+const fs = require('@cyclic.sh/s3fs/promises')("cyclic-amused-kerchief-eel-eu-west-3");
 const path = require("path");
 const { User, Kursus, Transaction } = require("../models/data");
 const jwt = require("jsonwebtoken");
@@ -10,8 +10,8 @@ const storage = multer.diskStorage({
   destination: (req, file, callback) => {
     const folderName = `profiles/`;
 
-    if (!fs.existsSync(folderName)) {
-      fs.mkdirSync(folderName, { recursive: true });
+    if (!await(fs.existsSync(folderName))) {
+      await(fs.mkdirSync(folderName, { recursive: true }));
     }
 
     callback(null, folderName);
