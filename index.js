@@ -1,4 +1,5 @@
 const express = require("express");
+const AWS = require('aws-sdk');
 const mongoose = require("mongoose");
 const axios = require("axios");
 const nodemailer = require("nodemailer");
@@ -13,6 +14,7 @@ const app = express();
 const port = 3000;
 const cors = require("cors");
 const teacher = require("./teacher");
+const s3 = new AWS.S3();
 app.use(
   cors()
 );
@@ -114,7 +116,7 @@ app.get("/activeUser", async (req, res) => {
       if (user) {
         flag = true;
       }
-    } catch (err) {}
+    } catch (err) { }
   }
   return res.status(200).json({
     user,
@@ -196,6 +198,19 @@ app.get("/listKursus", async (req, res) => {
 //get kursus information
 app.get("/kursus/:_id", async (req, res) => {
   const kursus = await Kursus.find({ _id: req.params._id });
+  for (var i = 0; i < kursus.materi.length; i++) {
+    var pathbiasa = kursus.materi[i].path;
+    s3.getSignedUrl('getObject', {
+      Bucket: 'cyclic-amused-kerchief-eel-eu-west-3',
+      Key: pathbiasa,
+    }, (err, url) => {
+      if (err) {
+        console.error('Error generating presigned URL:', err);
+        return;
+      }
+      kursus.materi[i].path = url;
+    });
+  }
   const user = await User.find({ _id: kursus[0].owner });
   return res.status(200).json({
     kursus: kursus,
@@ -650,7 +665,7 @@ app.post("/create-payment", async (req, res) => {
         status: "pending",
       });
       newTransaction.save();
-    }else if (cekada.status == "pending") {
+    } else if (cekada.status == "pending") {
       const updateid = await Transaction.updateOne(
         {
           user: id_user,
