@@ -216,7 +216,6 @@ app.get("/kursus/:_id", async (req, res) => {
   return res.status(200).json({
     kursus: kursus,
     teacher: user,
-    link_materi:linkmateri,
   });
 });
 
