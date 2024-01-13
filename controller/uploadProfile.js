@@ -10,8 +10,8 @@ const storage = multer.diskStorage({
   destination: async (req, file, callback) => {
     const folderName = `profiles/`;
 
-    if (!await(fs.existsSync(folderName))) {
-      await(fs.mkdirSync(folderName, { recursive: true }));
+    if (!await(fs.exists(folderName))) {
+      await(fs.mkdir(folderName, { recursive: true }));
     }
 
     callback(null, folderName);
