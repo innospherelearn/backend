@@ -6,6 +6,7 @@ const jwt = require("jsonwebtoken");
 const secret = "rahasia";
 let id = 1;
 const { ObjectId } = require("mongodb");
+const { default: axios } = require("axios");
 
 const storage = multer.diskStorage({
   destination: (req, file, callback) => {
@@ -70,7 +71,7 @@ const getPPTeacher = async (req, res) => {
   }
   const lokasinya = user.profile_path;
 
-  return res.status(200).sendFile(lokasinya);
+  return res.status(200).sendFile(await axios.get(lokasinya));
 };
 
 module.exports = {
