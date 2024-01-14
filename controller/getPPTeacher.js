@@ -1,6 +1,6 @@
 const multer = require("multer");
 const AWS = require('aws-sdk');
-const fs = require('@cyclic.sh/s3fs/promises')("cyclic-amused-kerchief-eel-eu-west-3");
+const fs = require('@cyclic.sh/s3fs/promises')("cyclic-clean-tam-worm-ap-northeast-2");
 const path = require("path");
 const { User, Kursus, Transaction } = require("../models/data");
 const jwt = require("jsonwebtoken");
@@ -70,7 +70,7 @@ const getPPTeacher = async (req, res) => {
   }
   const lokasinya = user.profile_path;
   const params = {
-    Bucket: 'cyclic-amused-kerchief-eel-eu-west-3',
+    Bucket: 'cyclic-clean-tam-worm-ap-northeast-2',
     Key: lokasinya,
   };
   const s3Stream = s3.getObject(params).createReadStream();

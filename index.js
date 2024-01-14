@@ -202,7 +202,7 @@ app.get("/kursus/:_id", async (req, res) => {
   for (var i = 0; i < kursus[0].materi.length; i++) {
     var pathbiasa = kursus[0].materi[i].path;
     const url = s3.getSignedUrl('getObject', {
-      Bucket: 'cyclic-amused-kerchief-eel-eu-west-3',
+      Bucket: 'cyclic-clean-tam-worm-ap-northeast-2',
       Key: pathbiasa,
       ResponseContentType: "application/pdf",
       ResponseContentDisposition: "inline",

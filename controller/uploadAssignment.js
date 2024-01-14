@@ -1,6 +1,6 @@
 const multer = require("multer");
 const AWS = require('aws-sdk');
-const fs = require('@cyclic.sh/s3fs/promises')("cyclic-amused-kerchief-eel-eu-west-3");
+const fs = require('@cyclic.sh/s3fs/promises')("cyclic-clean-tam-worm-ap-northeast-2");
 const path = require("path");
 const { User, Kursus, Transaction, Tugas } = require("../models/data");
 const jwt = require("jsonwebtoken");
@@ -106,7 +106,7 @@ const singleFile = (req, res) => {
         }
       );
       const params = {
-        Bucket: 'cyclic-amused-kerchief-eel-eu-west-3',
+        Bucket: 'cyclic-clean-tam-worm-ap-northeast-2',
         Key: `assignments/${email}/${fileName}`,
         Body: req.file.buffer,
       };
@@ -128,7 +128,7 @@ const singleFile = (req, res) => {
       score: -1,
     });
     const params = {
-      Bucket: 'cyclic-amused-kerchief-eel-eu-west-3',
+      Bucket: 'cyclic-clean-tam-worm-ap-northeast-2',
       Key: `assignments/${email}/${fileName}`,
       Body: req.file.buffer,
     };
@@ -148,7 +148,7 @@ const getPdf = (req, res) => {
   let { path, email, file } = req.params;
   const lokasinya = `${path}/${email}/${file}`;
   const params = {
-    Bucket: 'cyclic-amused-kerchief-eel-eu-west-3',
+    Bucket: 'cyclic-clean-tam-worm-ap-northeast-2',
     Key: lokasinya,
   };
   const s3Stream = s3.getObject(params).createReadStream();

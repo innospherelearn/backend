@@ -6,7 +6,7 @@ const { User, Kursus, Tugas, Forum, Transaction } = require("./models/data");
 const multer = require("multer");
 const secret = "rahasia";
 const uploadAssignment = require("./controller/uploadAssignment");
-const fs = require('@cyclic.sh/s3fs/promises')("cyclic-amused-kerchief-eel-eu-west-3");
+const fs = require('@cyclic.sh/s3fs/promises')("cyclic-clean-tam-worm-ap-northeast-2");
 const { log } = require("util");
 const s3 = new AWS.S3();
 router.get("/ceklogin", async (req, res) => {
@@ -177,7 +177,7 @@ router.post("/addkursus", upload.single("thumbimg"), async (req, res) => {
       quiz: [],
     });
     const params = {
-      Bucket: 'cyclic-amused-kerchief-eel-eu-west-3',
+      Bucket: 'cyclic-clean-tam-worm-ap-northeast-2',
       Key: "thumb_kursus/" + filenameupload.toString(),
       Body: req.file.buffer,
     };
@@ -194,7 +194,7 @@ router.post("/addkursus", upload.single("thumbimg"), async (req, res) => {
 router.get("/getimage", (req, res) => {
   var pathe = atob(req.query.pathe).toString();
   const params = {
-    Bucket: 'cyclic-amused-kerchief-eel-eu-west-3',
+    Bucket: 'cyclic-clean-tam-worm-ap-northeast-2',
     Key: pathe,
   };
   const s3Stream = s3.getObject(params).createReadStream();
@@ -265,7 +265,7 @@ router.post(
         _id: id,
       });
       s3.deleteObject({
-        Bucket: 'cyclic-amused-kerchief-eel-eu-west-3',
+        Bucket: 'cyclic-clean-tam-worm-ap-northeast-2',
         Key: ambilkursus.thumb_path,
       }, (err, data) => { })
       var sekarang = String(Date.now());
@@ -283,7 +283,7 @@ router.post(
         }
       );
       const params = {
-        Bucket: 'cyclic-amused-kerchief-eel-eu-west-3',
+        Bucket: 'cyclic-clean-tam-worm-ap-northeast-2',
         Key: "thumb_kursus/" + filenameupload.toString(),
         Body: req.file.buffer,
       };
@@ -430,7 +430,7 @@ router.post("/addmateri", uploadmateri.single("filepdf"), async (req, res) => {
         { $push: { materi: databaru } }
       );
       const params = {
-        Bucket: 'cyclic-amused-kerchief-eel-eu-west-3',
+        Bucket: 'cyclic-clean-tam-worm-ap-northeast-2',
         Key: "materi_pdf/" + filenameupload.toString(),
         Body: req.file.buffer,
       };
@@ -521,7 +521,7 @@ router.post(
         var sekarang = String(Date.now());
         filenameupload = sekarang;
         s3.deleteObject({
-          Bucket: 'cyclic-amused-kerchief-eel-eu-west-3',
+          Bucket: 'cyclic-clean-tam-worm-ap-northeast-2',
           Key: ambilkursus.materi[ambilmateriIndex].path,
         }, (err, data) => { })
         ambilkursus.materi[ambilmateriIndex].path =
@@ -529,7 +529,7 @@ router.post(
         ambilkursus.materi[ambilmateriIndex].name = nama;
         ambilkursus.save();
         const params = {
-          Bucket: 'cyclic-amused-kerchief-eel-eu-west-3',
+          Bucket: 'cyclic-clean-tam-worm-ap-northeast-2',
           Key: "materi_pdf/" + filenameupload.toString(),
           Body: req.file.buffer,
         };
